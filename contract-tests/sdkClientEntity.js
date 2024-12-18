@@ -21,6 +21,10 @@ export function makeSdkConfig(options, tag) {
     diagnosticOptOut: true,
   };
 
+  if (options.dataSystem) {
+    copyDataSystemOptionsToLegacyOptions(options, tag);
+  }
+
   const maybeTime = (seconds) =>
     seconds === undefined || seconds === null ? undefined : seconds / 1000;
   if (options.streaming) {
@@ -82,6 +86,19 @@ export function makeSdkConfig(options, tag) {
     }
   }
   return cf;
+}
+
+function copyDataSystemOptionsToLegacyOptions(options, tag) {
+  const primarySynchronizer = options.dataSystem.synchronizers.primary
+  if (primarySynchronizer) {
+    if (primarySynchronizer.streaming) {
+      options.streaming = primarySynchronizer.streaming
+    }
+
+    if (primarySynchronizer.polling) {
+      options.polling = primarySynchronizer.polling
+    }
+  }
 }
 
 function getExecution(order) {
